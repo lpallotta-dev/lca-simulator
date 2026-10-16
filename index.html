@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LCA Simulator - Test</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --accent: #38bdf8;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .card {
+            background: var(--card);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            max-width: 480px;
+            width: 100%;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        h1 {
+            margin-top: 0;
+            font-size: 1.5rem;
+            color: var(--accent);
+        }
+        p {
+            color: var(--muted);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        .control-group {
+            margin: 1.5rem 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        select, input[type="range"] {
+            width: 100%;
+            padding: 0.6rem;
+            border-radius: 8px;
+            background: #0f172a;
+            color: white;
+            border: 1px solid #334155;
+            font-size: 1rem;
+        }
+        .result-box {
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid var(--accent);
+            border-radius: 12px;
+            padding: 1.2rem;
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+        .result-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin: 0.3rem 0;
+        }
+        .badge {
+            display: inline-block;
+            background: #22c55e;
+            color: #052e16;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 999px;
+            margin-bottom: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <span class="badge">ONLINE SU GITHUB PAGES</span>
+        <h1>Simulatore LCA — Test</h1>
+        <p>Se vedi questa pagina e i numeri cambiano muovendo i controlli qui sotto, il tuo hosting funziona perfettamente!</p>
+
+        <div class="control-group">
+            <label for="tech">Tecnologia di Produzione:</label>
+            <select id="tech" onchange="calculate()">
+                <option value="slm">SLM (Selective Laser Melting)</option>
+                <option value="waam">WAAM (Wire Arc Additive Manufacturing)</option>
+                <option value="cnc">CNC Milling</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <label for="batch">Dimensione Lotto (Batch Size): <span id="batchVal" style="color: var(--accent);">10</span> pezzi</label>
+            <input type="range" id="batch" min="1" max="100" value="10" oninput="calculate()">
+        </div>
+
+        <div class="result-box">
+            <div style="font-size: 0.85rem; color: var(--muted);">Impatto Stimato (Valore Demo)</div>
+            <div class="result-value" id="output">125.0 kg CO₂eq</div>
+            <div style="font-size: 0.8rem; color: var(--muted);" id="perPart">12.50 kg CO₂eq / pezzo</div>
+        </div>
+    </div>
+
+    <script>
+        function calculate() {
+            const tech = document.getElementById('tech').value;
+            const batch = parseInt(document.getElementById('batch').value);
+            document.getElementById('batchVal').innerText = batch;
+
+            // Parametri fittizi solo per il test
+            const baseFactors = { slm: 12.5, waam: 8.2, cnc: 15.0 };
+            const setupOverhead = { slm: 20, waam: 15, cnc: 45 };
+
+            const totalImpact = setupOverhead[tech] + (baseFactors[tech] * batch);
+            const perPartImpact = totalImpact / batch;
+
+            document.getElementById('output').innerText = totalImpact.toFixed(1) + ' kg CO₂eq';
+            document.getElementById('perPart').innerText = perPartImpact.toFixed(2) + ' kg CO₂eq / pezzo';
+        }
+        calculate();
+    </script>
+</body>
+</html>
