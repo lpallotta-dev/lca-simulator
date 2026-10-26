@@ -6,39 +6,25 @@
 
     <meta
         name="description"
-        content="Interactive dashboard presenting life cycle assessment results for CNC milling, WAAM and SLM across three manufacturing scenarios."
+        content="Comparative LCA dashboard for CNC milling, WAAM and SLM, including 18 midpoint categories and an endpoint single score."
     >
 
-    <meta name="color-scheme" content="dark">
-
-    <title>Manufacturing Batch Scalability — Comparative LCA Dashboard</title>
+    <title>Manufacturing Batch Scalability — LCA Dashboard</title>
 
     <style>
-        /* ==========================================================
-           DESIGN SYSTEM
-           ========================================================== */
-
         :root {
             color-scheme: dark;
-
             --bg: #09111f;
             --surface: #152237;
             --surface-alt: #0e192b;
             --border: #34455f;
-
             --text: #f1f5f9;
             --muted: #b0bfd2;
-
             --accent: #66d1ff;
             --accent-soft: rgba(102, 209, 255, 0.10);
-
             --cnc: #73adff;
             --waam: #58dfb4;
             --slm: #ffcb70;
-
-            --warning: #ffcb70;
-            --warning-soft: rgba(255, 203, 112, 0.08);
-
             --radius: 16px;
             --shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
         }
@@ -56,28 +42,20 @@
             background: var(--bg);
             color: var(--text);
             font-family:
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                Roboto,
-                Arial,
-                sans-serif;
+                -apple-system, BlinkMacSystemFont, "Segoe UI",
+                Roboto, Arial, sans-serif;
             line-height: 1.6;
         }
 
         button,
-        input,
-        select {
+        select,
+        input {
             font: inherit;
         }
 
         a {
             color: var(--accent);
             text-underline-offset: 3px;
-        }
-
-        a:hover {
-            text-decoration-thickness: 2px;
         }
 
         :focus-visible {
@@ -99,9 +77,9 @@
         }
 
         h1 {
-            font-size: clamp(1.65rem, 3.2vw, 2.65rem);
             max-width: 28ch;
             margin-bottom: 14px;
+            font-size: clamp(1.65rem, 3.2vw, 2.65rem);
         }
 
         h2 {
@@ -112,26 +90,13 @@
             font-size: 1rem;
         }
 
-        strong {
-            font-weight: 700;
-        }
-
         .container {
             width: min(1180px, calc(100% - 32px));
             margin-inline: auto;
         }
 
-        .muted {
-            color: var(--muted);
-        }
-
-        .eyebrow {
-            margin-bottom: 10px;
-            color: var(--accent);
-            font-size: 0.75rem;
-            font-weight: 800;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
+        .section {
+            margin-bottom: 24px;
         }
 
         .panel {
@@ -141,10 +106,6 @@
             border: 1px solid var(--border);
             border-radius: var(--radius);
             box-shadow: var(--shadow);
-        }
-
-        .section {
-            margin-bottom: 24px;
         }
 
         .section-heading {
@@ -159,6 +120,10 @@
             margin-bottom: 0;
             color: var(--muted);
             font-size: 0.9rem;
+        }
+
+        .muted {
+            color: var(--muted);
         }
 
         .sr-only {
@@ -188,9 +153,7 @@
             top: 12px;
         }
 
-        /* ==========================================================
-           HEADER
-           ========================================================== */
+        /* HEADER */
 
         .site-header {
             padding-block: 36px 24px;
@@ -209,10 +172,19 @@
             border-radius: 20px;
         }
 
+        .eyebrow {
+            margin-bottom: 10px;
+            color: var(--accent);
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
         .hero-subtitle {
             max-width: 75ch;
-            color: var(--muted);
             margin-bottom: 22px;
+            color: var(--muted);
         }
 
         .metadata {
@@ -259,9 +231,7 @@
             font-size: 0.85rem;
         }
 
-        /* ==========================================================
-           SYSTEM BOUNDARY TOOLTIP
-           ========================================================== */
+        /* SYSTEM BOUNDARY TOOLTIP */
 
         .boundary-card {
             position: relative;
@@ -286,7 +256,6 @@
             cursor: help;
         }
 
-        /* The entire card acts as the pointer target. */
         .boundary-trigger::after {
             content: "";
             position: absolute;
@@ -306,7 +275,6 @@
             color: var(--accent);
             font-size: 0.7rem;
             font-weight: 750;
-            font-style: normal;
         }
 
         .boundary-tooltip {
@@ -314,32 +282,23 @@
             right: 0;
             bottom: calc(100% + 12px);
             z-index: 30;
-
             display: block;
             width: min(360px, calc(100vw - 64px));
             padding: 18px;
-
             background: var(--surface-alt);
             color: var(--text);
             border: 1px solid var(--accent);
             border-radius: 12px;
             box-shadow: 0 14px 36px rgba(0, 0, 0, 0.4);
-
             font-size: 0.82rem;
             font-weight: 400;
             line-height: 1.6;
-            text-align: left;
-
             opacity: 0;
             visibility: hidden;
             pointer-events: none;
-
-            transition:
-                opacity 160ms ease,
-                visibility 160ms ease;
+            transition: opacity 160ms ease, visibility 160ms ease;
         }
 
-        /* Keeps the tooltip open while moving the pointer onto it. */
         .boundary-tooltip::before {
             content: "";
             position: absolute;
@@ -386,9 +345,7 @@
             pointer-events: auto;
         }
 
-        /* ==========================================================
-           NOTICES
-           ========================================================== */
+        /* NOTICES AND CONTROLS */
 
         .notice {
             padding: 16px 18px;
@@ -403,19 +360,9 @@
             margin-bottom: 0;
         }
 
-        .notice.warning {
-            background: var(--warning-soft);
-            border-color: rgba(255, 203, 112, 0.35);
-            border-left-color: var(--warning);
-        }
-
-        /* ==========================================================
-           CONTROLS
-           ========================================================== */
-
         .controls {
             display: grid;
-            grid-template-columns: 1.25fr 0.8fr 1fr;
+            grid-template-columns: 1.15fr 0.8fr 1.2fr;
             gap: 24px;
             align-items: start;
         }
@@ -533,9 +480,7 @@
             font-size: 0.87rem;
         }
 
-        /* ==========================================================
-           TECHNOLOGY CARDS
-           ========================================================== */
+        /* TECHNOLOGY CARDS */
 
         .tech-grid {
             display: grid;
@@ -555,17 +500,9 @@
             border-radius: var(--radius);
         }
 
-        .tech-card.cnc {
-            --tech-color: var(--cnc);
-        }
-
-        .tech-card.waam {
-            --tech-color: var(--waam);
-        }
-
-        .tech-card.slm {
-            --tech-color: var(--slm);
-        }
+        .tech-card.cnc { --tech-color: var(--cnc); }
+        .tech-card.waam { --tech-color: var(--waam); }
+        .tech-card.slm { --tech-color: var(--slm); }
 
         .tech-card.is-lowest {
             box-shadow: inset 0 0 0 1px var(--tech-color);
@@ -578,16 +515,16 @@
         }
 
         .tech-material {
-            margin-bottom: 12px;
             min-height: 2.8em;
+            margin-bottom: 12px;
             color: var(--muted);
             font-size: 0.8rem;
         }
 
         .status {
             align-self: flex-start;
-            padding: 4px 9px;
             margin-bottom: 15px;
+            padding: 4px 9px;
             background: var(--surface-alt);
             color: var(--muted);
             border: 1px solid var(--border);
@@ -602,8 +539,8 @@
         }
 
         .impact {
-            padding: 16px 12px;
             margin-bottom: 18px;
+            padding: 16px 12px;
             background: var(--surface-alt);
             border: 1px solid var(--border);
             border-radius: 12px;
@@ -669,21 +606,15 @@
             font-variant-numeric: tabular-nums;
         }
 
-        .card-note {
+        .card-note,
+        .dashboard-footnote,
+        .source-line {
             margin: 14px 0 0;
             color: var(--muted);
-            font-size: 0.73rem;
+            font-size: 0.76rem;
         }
 
-        .dashboard-footnote {
-            margin: 14px 0 0;
-            color: var(--muted);
-            font-size: 0.79rem;
-        }
-
-        /* ==========================================================
-           COMPARISON AND INTERPRETATION
-           ========================================================== */
+        /* COMPARISON */
 
         .two-column {
             display: grid;
@@ -717,10 +648,8 @@
         }
 
         .bar-fill {
-            width: 0;
             height: 100%;
             border-radius: 5px;
-            transition: width 180ms ease;
         }
 
         .chart-note {
@@ -738,25 +667,21 @@
             font-size: 0.87rem;
         }
 
-        .insight:last-child {
-            margin-bottom: 0;
-        }
-
         .insight p {
             margin-bottom: 0;
         }
 
-        /* ==========================================================
-           HOTSPOTS
-           ========================================================== */
+        /* HOTSPOTS AND METHODOLOGY */
 
-        .hotspot-grid {
+        .hotspot-grid,
+        .method-grid {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 16px;
         }
 
-        .hotspot-card {
+        .hotspot-card,
+        .method-card {
             min-width: 0;
             padding: 17px;
             background: var(--surface-alt);
@@ -765,7 +690,8 @@
         }
 
         .hotspot-card p,
-        .hotspot-card li {
+        .hotspot-card li,
+        .method-card p {
             font-size: 0.83rem;
         }
 
@@ -774,7 +700,8 @@
             padding-left: 18px;
         }
 
-        .hotspot-card p:last-child {
+        .hotspot-card p:last-child,
+        .method-card p:last-child {
             margin-bottom: 0;
         }
 
@@ -785,9 +712,12 @@
             font-weight: 800;
         }
 
-        /* ==========================================================
-           TABLES
-           ========================================================== */
+        .route {
+            margin-top: 12px;
+            font-size: 0.79rem !important;
+        }
+
+        /* TABLES */
 
         .table-wrap {
             max-width: 100%;
@@ -831,66 +761,21 @@
             font-variant-numeric: tabular-nums;
         }
 
-        .source-line {
-            margin: 12px 0 0;
-            color: var(--muted);
-            font-size: 0.76rem;
-        }
-
-        /* ==========================================================
-           METHODOLOGY
-           ========================================================== */
-
-        .method-grid {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 18px;
-        }
-
-        .method-card {
-            padding: 17px;
-            background: var(--surface-alt);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-        }
-
-        .method-card p {
-            margin-bottom: 0;
-            color: var(--muted);
-            font-size: 0.84rem;
-        }
-
-        .route {
-            margin-top: 12px;
-            color: var(--text) !important;
-            font-size: 0.79rem !important;
-        }
-
         .site-footer {
             padding: 12px 0 40px;
             color: var(--muted);
             font-size: 0.78rem;
         }
 
-        .no-script {
-            margin-bottom: 24px;
-        }
+        /* RESPONSIVE */
 
-        /* ==========================================================
-           RESPONSIVE
-           ========================================================== */
-
-        @media (max-width: 1000px) {
+        @media (max-width: 1050px) {
             .controls {
                 grid-template-columns: 1fr 1fr;
             }
 
             .metric-control {
                 grid-column: 1 / -1;
-            }
-
-            .tech-grid {
-                gap: 12px;
             }
 
             .tech-card {
@@ -938,14 +823,6 @@
                 grid-column: auto;
             }
 
-            .spec-grid {
-                gap: 8px;
-            }
-
-            .spec-grid > div {
-                padding: 10px;
-            }
-
             .kpis {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
@@ -968,32 +845,20 @@
             }
         }
 
-        /* ==========================================================
-           PRINT
-           ========================================================== */
-
         @media print {
             :root {
                 color-scheme: light;
-
                 --bg: #ffffff;
                 --surface: #ffffff;
                 --surface-alt: #f3f5f8;
                 --border: #b7c1ce;
-
                 --text: #142033;
                 --muted: #445368;
-
                 --accent: #075d85;
                 --cnc: #175ba8;
                 --waam: #08754f;
                 --slm: #8b5500;
-
                 --shadow: none;
-            }
-
-            body {
-                font-size: 10pt;
             }
 
             .container {
@@ -1003,24 +868,21 @@
             .page-nav,
             .controls,
             .skip-link,
-            .control-help,
             .boundary-tooltip,
             .info-icon {
                 display: none;
             }
 
-            .hero,
-            .panel,
-            .tech-card {
-                box-shadow: none;
-                break-inside: avoid;
+            .tech-grid,
+            .two-column,
+            .hotspot-grid,
+            .method-grid {
+                grid-template-columns: 1fr;
             }
 
-            .tech-grid,
-            .hotspot-grid,
-            .method-grid,
-            .two-column {
-                grid-template-columns: 1fr;
+            .panel,
+            .tech-card {
+                break-inside: avoid;
             }
 
             .table-wrap {
@@ -1032,18 +894,12 @@
                 print-color-adjust: exact;
                 -webkit-print-color-adjust: exact;
             }
-
-            .site-header {
-                padding-top: 0;
-            }
         }
     </style>
 </head>
 
 <body>
-    <a class="skip-link" href="#main-content">
-        Skip to dashboard
-    </a>
+    <a class="skip-link" href="#main-content">Skip to dashboard</a>
 
     <header class="site-header">
         <div class="container">
@@ -1075,14 +931,11 @@
 
                     <div>
                         <dt>Finished geometry</dt>
-                        <dd>
-                            155.06 cm³ · approximately 1.22–1.25 kg
-                        </dd>
+                        <dd>155.06 cm³ · approximately 1.22–1.25 kg</dd>
                     </div>
 
                     <div class="boundary-card" id="boundary-card">
                         <dt>System boundary</dt>
-
                         <dd>
                             <button
                                 type="button"
@@ -1091,10 +944,9 @@
                                 aria-describedby="boundary-tooltip"
                             >
                                 Cradle-to-gate
-                                <span
-                                    class="info-icon"
-                                    aria-hidden="true"
-                                >i</span>
+                                <span class="info-icon" aria-hidden="true">
+                                    i
+                                </span>
                             </button>
 
                             <span
@@ -1108,9 +960,9 @@
 
                                 <span>
                                     The assessment covers the production
-                                    chain from raw material extraction
-                                    to the finished component leaving
-                                    the manufacturing facility.
+                                    chain from raw material extraction to
+                                    the finished component leaving the
+                                    manufacturing facility.
                                 </span>
 
                                 <span class="tooltip-stages">
@@ -1119,10 +971,9 @@
                                 </span>
 
                                 <span class="tooltip-note">
-                                    Product use and end-of-life are
-                                    outside this boundary. This study
-                                    also excludes intermediate
-                                    transportation.
+                                    Product use and end-of-life are outside
+                                    this boundary. This study also excludes
+                                    intermediate transportation.
                                 </span>
                             </span>
                         </dd>
@@ -1142,11 +993,11 @@
 
     <main id="main-content" class="container">
         <noscript>
-            <div class="notice warning no-script">
+            <div class="notice section">
                 <p>
                     <strong>JavaScript is disabled.</strong>
-                    Interactive results cannot be updated.
-                    The reported endpoint results remain available in the
+                    Interactive results are unavailable. Reported endpoint
+                    values remain available in the
                     <a href="#reference-results">reference table</a>.
                 </p>
             </div>
@@ -1154,17 +1005,13 @@
 
         <div class="notice section">
             <p>
-                <strong>
-                    Three assessed scenarios, not a predictive model.
-                </strong>
-                This dashboard displays the results reported for
-                <strong>1, 6 and 30 components</strong>.
-                It does not interpolate unassessed batch sizes or establish
-                a general environmental break-even point.
+                <strong>Three assessed scenarios, not a predictive model.</strong>
+                Results are reported for <strong>1, 6 and 30 components</strong>.
+                No interpolation is performed.
+                Select from <strong>18 midpoint categories</strong> and
+                <strong>one aggregated endpoint score</strong>.
             </p>
         </div>
-
-        <!-- INTERACTIVE DASHBOARD -->
 
         <section
             id="dashboard"
@@ -1172,10 +1019,7 @@
             aria-labelledby="dashboard-title"
         >
             <div class="section-heading">
-                <h2 id="dashboard-title">
-                    Compare the assessed scenarios
-                </h2>
-
+                <h2 id="dashboard-title">Compare the assessed scenarios</h2>
                 <p>
                     Select a production scenario, reporting basis and
                     environmental indicator.
@@ -1189,11 +1033,7 @@
 
                         <div class="choice-grid">
                             <label class="choice">
-                                <input
-                                    type="radio"
-                                    name="scenario"
-                                    value="1"
-                                >
+                                <input type="radio" name="scenario" value="1">
                                 <span class="choice-label">
                                     N = 1
                                     <small>Isolated component</small>
@@ -1214,11 +1054,7 @@
                             </label>
 
                             <label class="choice">
-                                <input
-                                    type="radio"
-                                    name="scenario"
-                                    value="30"
-                                >
+                                <input type="radio" name="scenario" value="30">
                                 <span class="choice-label">
                                     N = 30
                                     <small>3D stacked layout</small>
@@ -1243,9 +1079,7 @@
                                     value="unit"
                                     checked
                                 >
-                                <span class="choice-label">
-                                    Per component
-                                </span>
+                                <span class="choice-label">Per component</span>
                             </label>
 
                             <label class="choice">
@@ -1254,23 +1088,18 @@
                                     name="allocation"
                                     value="batch"
                                 >
-                                <span class="choice-label">
-                                    Total batch
-                                </span>
+                                <span class="choice-label">Total batch</span>
                             </label>
                         </div>
 
                         <p class="control-help">
-                            Per-component results equal the reported
-                            batch total divided by N.
+                            Per-component results equal the reported batch
+                            total divided by N.
                         </p>
                     </fieldset>
 
                     <div class="metric-control">
-                        <label
-                            class="control-label"
-                            for="metric-select"
-                        >
+                        <label class="control-label" for="metric-select">
                             3. Environmental indicator
                         </label>
 
@@ -1285,19 +1114,58 @@
                                 </option>
                             </optgroup>
 
-                            <optgroup label="Selected midpoint indicators">
+                            <optgroup label="ReCiPe 2016 — 18 midpoint categories">
                                 <option value="gw">
                                     Global warming — kg CO₂ eq
                                 </option>
-
+                                <option value="sod">
+                                    Stratospheric ozone depletion — kg CFC-11 eq
+                                </option>
+                                <option value="ir">
+                                    Ionizing radiation — kBq Co-60 eq
+                                </option>
+                                <option value="ofhh">
+                                    Ozone formation, Human health — kg NOₓ eq
+                                </option>
+                                <option value="pm">
+                                    Fine particulate matter formation — kg PM₂.₅ eq
+                                </option>
+                                <option value="ofte">
+                                    Ozone formation, Terrestrial ecosystems — kg NOₓ eq
+                                </option>
+                                <option value="ta">
+                                    Terrestrial acidification — kg SO₂ eq
+                                </option>
+                                <option value="fe">
+                                    Freshwater eutrophication — kg P eq
+                                </option>
+                                <option value="me">
+                                    Marine eutrophication — kg N eq
+                                </option>
+                                <option value="te">
+                                    Terrestrial ecotoxicity — kg 1,4-DCB eq
+                                </option>
+                                <option value="fwe">
+                                    Freshwater ecotoxicity — kg 1,4-DCB eq
+                                </option>
+                                <option value="mae">
+                                    Marine ecotoxicity — kg 1,4-DCB eq
+                                </option>
+                                <option value="hct">
+                                    Human carcinogenic toxicity — kg 1,4-DCB eq
+                                </option>
+                                <option value="hnct">
+                                    Human non-carcinogenic toxicity — kg 1,4-DCB eq
+                                </option>
+                                <option value="lu">
+                                    Land use — m²a crop eq
+                                </option>
                                 <option value="mrs">
                                     Mineral resource scarcity — kg Cu eq
                                 </option>
-
                                 <option value="frs">
                                     Fossil resource scarcity — kg oil eq
                                 </option>
-
                                 <option value="wc">
                                     Water consumption — m³
                                 </option>
@@ -1305,8 +1173,8 @@
                         </select>
 
                         <p class="control-help" id="metric-help">
-                            A lower result indicates a lower modeled
-                            impact for the selected indicator.
+                            A lower result indicates a lower modeled impact
+                            for the selected indicator.
                         </p>
                     </div>
                 </div>
@@ -1315,7 +1183,6 @@
                     <h3 id="scenario-title">
                         Six-component batch · SLM planar layout
                     </h3>
-
                     <p id="scenario-description">
                         Six parts share one SLM build platform without
                         vertical stacking. CNC and WAAM are modeled as
@@ -1332,20 +1199,15 @@
                 aria-atomic="true"
             ></div>
 
-            <div
-                class="tech-grid"
-                id="technology-cards"
-            ></div>
+            <div class="tech-grid" id="technology-cards"></div>
 
             <p class="dashboard-footnote">
-                “Lowest modeled value” identifies a deterministic result
-                for the selected indicator, not an overall technology
-                recommendation. Material performance and uncertainty
-                limit direct interpretation.
+                “Lowest modeled value” refers to the selected deterministic
+                indicator, not an overall technology recommendation.
+                Results retain the precision and numerical differences of
+                the reported thesis tables.
             </p>
         </section>
-
-        <!-- COMPARISON AND INTERPRETATION -->
 
         <section
             class="two-column section"
@@ -1360,10 +1222,9 @@
                 <div id="comparison-bars"></div>
 
                 <p class="chart-note">
-                    Bars start at zero. The highest value in the current
-                    selection occupies the full track; the scale updates
-                    when the selection changes. Numerical labels provide
-                    the actual values.
+                    Bars start at zero. The highest value fills the track.
+                    The scale updates with each selection; numerical labels
+                    provide the actual values.
                 </p>
             </div>
 
@@ -1371,12 +1232,51 @@
                 <div class="section-heading">
                     <h2>How to read this result</h2>
                 </div>
-
                 <div id="interpretation"></div>
             </div>
         </section>
 
-        <!-- ENDPOINT HOTSPOTS -->
+        <!-- ALL 18 MIDPOINT RESULTS FOR THE ACTIVE SCENARIO -->
+
+        <section
+            class="panel section"
+            aria-labelledby="midpoint-table-title"
+        >
+            <div class="section-heading">
+                <h2 id="midpoint-table-title">All 18 midpoint categories</h2>
+                <p id="midpoint-table-description"></p>
+            </div>
+
+            <div
+                class="table-wrap"
+                role="region"
+                aria-label="All midpoint results for the selected scenario"
+                tabindex="0"
+            >
+                <table>
+                    <caption id="midpoint-caption">
+                        Selected scenario midpoint results.
+                    </caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Impact category</th>
+                            <th scope="col">Unit</th>
+                            <th scope="col">CNC</th>
+                            <th scope="col">WAAM + CNC</th>
+                            <th scope="col">SLM + CNC</th>
+                        </tr>
+                    </thead>
+                    <tbody id="midpoint-table-body"></tbody>
+                </table>
+            </div>
+
+            <p class="source-line">
+                Source: thesis Tables 4.1–4.3. Per-component values are
+                calculated from the corresponding reported batch total.
+                Additional displayed digits from division do not imply
+                additional source-data precision.
+            </p>
+        </section>
 
         <section
             id="hotspots"
@@ -1384,84 +1284,54 @@
             aria-labelledby="hotspots-title"
         >
             <div class="section-heading">
-                <h2 id="hotspots-title">
-                    Where do the impacts come from?
-                </h2>
-
+                <h2 id="hotspots-title">Where do the impacts come from?</h2>
                 <p>
                     Endpoint contribution analysis only.
-                    These contributions do not change with the midpoint
-                    indicator selected above.
+                    These shares do not represent contributions to the
+                    selected midpoint indicator.
                 </p>
             </div>
 
             <div class="hotspot-grid">
                 <article class="hotspot-card">
-                    <h3 style="color: var(--cnc);">
-                        CNC milling
-                    </h3>
-
-                    <span
-                        class="hotspot-number"
-                        style="color: var(--cnc);"
-                    >
+                    <h3 style="color: var(--cnc);">CNC milling</h3>
+                    <span class="hotspot-number" style="color: var(--cnc);">
                         82.7%
                     </span>
-
                     <p>
                         Approximately this share of the reported endpoint
-                        impact is attributed to the upstream steel ingot.
+                        impact is attributed to upstream steel ingot production.
                     </p>
-
                     <p class="muted">
-                        Hot rolling is a separate contribution.
-                        The share remains constant under the study’s
-                        sequential scaling assumption.
+                        Hot rolling is separate. Shares remain constant
+                        under the sequential scaling assumption.
                     </p>
                 </article>
 
                 <article class="hotspot-card">
-                    <h3 style="color: var(--waam);">
-                        WAAM + CNC
-                    </h3>
-
+                    <h3 style="color: var(--waam);">WAAM + CNC</h3>
                     <ul>
-                        <li>
-                            <strong>47.2%:</strong>
-                            wire feedstock production.
-                        </li>
-
-                        <li>
-                            <strong>44.9%:</strong>
-                            shielding argon supply.
-                        </li>
+                        <li><strong>47.2%:</strong> wire feedstock production.</li>
+                        <li><strong>44.9%:</strong> shielding argon supply.</li>
                     </ul>
-
                     <p class="muted">
-                        These are separate reported contributions.
-                        The wire total includes steel production,
+                        Wire production includes steel production,
                         hot rolling and drawing.
                     </p>
                 </article>
 
                 <article class="hotspot-card">
-                    <h3 style="color: var(--slm);">
-                        SLM + CNC
-                    </h3>
-
+                    <h3 style="color: var(--slm);">SLM + CNC</h3>
                     <div id="slm-hotspot-content"></div>
                 </article>
             </div>
 
             <p class="source-line">
-                Source: thesis §4.1.1.3 and §4.1.2.3,
-                Figures 4.3–4.8.
-                Argon is used upstream for powder atomization in the
-                SLM model; the SLM printing chamber uses nitrogen.
+                Source: thesis §4.1.1.3 and §4.1.2.3.
+                SLM atomization uses argon upstream; the printing chamber
+                uses nitrogen.
             </p>
         </section>
-
-        <!-- SLM TIME AND COST -->
 
         <section
             id="slm-economics"
@@ -1472,7 +1342,6 @@
                 <h2 id="economics-title">
                     SLM production time and reported cost
                 </h2>
-
                 <p>
                     Facility-provided aggregate costs, not a complete
                     comparative Life Cycle Costing assessment.
@@ -1482,15 +1351,11 @@
             <div
                 class="table-wrap"
                 role="region"
-                aria-label="SLM time and cost table"
+                aria-label="SLM time and cost"
                 tabindex="0"
             >
                 <table>
-                    <caption>
-                        Reported SLM manufacturing times and aggregate
-                        costs across the three scenarios.
-                    </caption>
-
+                    <caption>Reported SLM time and cost — Table 4.5.</caption>
                     <thead>
                         <tr>
                             <th scope="col">Scenario</th>
@@ -1500,7 +1365,6 @@
                             <th scope="col">Cost / part</th>
                         </tr>
                     </thead>
-
                     <tbody>
                         <tr>
                             <th scope="row">N = 1 · isolated</th>
@@ -1509,7 +1373,6 @@
                             <td class="numeric">€605.00</td>
                             <td class="numeric">€605.00</td>
                         </tr>
-
                         <tr>
                             <th scope="row">N = 6 · planar</th>
                             <td class="numeric">77 h 31 min</td>
@@ -1517,7 +1380,6 @@
                             <td class="numeric">€2,335.00</td>
                             <td class="numeric">€389.17</td>
                         </tr>
-
                         <tr>
                             <th scope="row">N = 30 · stacked</th>
                             <td class="numeric">425 h 19 min</td>
@@ -1532,24 +1394,18 @@
             <div class="notice" style="margin-top: 16px;">
                 <p>
                     <strong>Planar versus stacked:</strong>
-                    the reported unit cost falls by approximately 35.7%
-                    from the isolated build to the six-part build.
-                    Vertical stacking then raises unit cost by approximately
-                    19.1% relative to the planar build, while remaining
-                    below the isolated-build cost.
+                    unit cost decreases by approximately 35.7% from the
+                    isolated build to the planar batch. Stacking raises
+                    unit cost by approximately 19.1% relative to the planar
+                    batch, while remaining below the isolated-build cost.
                 </p>
             </div>
 
             <p class="source-line">
-                Source: thesis Table 4.5.
-                Allocated time is batch printing time divided by N,
-                not the delivery time of an individual component.
-                The detailed cost breakdown and its included operations
-                were not disclosed.
+                Allocated printing time is not individual delivery time.
+                The detailed cost breakdown was not disclosed.
             </p>
         </section>
-
-        <!-- METHODOLOGY -->
 
         <section
             id="methodology"
@@ -1558,7 +1414,6 @@
         >
             <div class="section-heading">
                 <h2 id="method-title">Study framework</h2>
-
                 <p>
                     ISO 14040/14044 framework · SimaPro 10.5 ·
                     Ecoinvent 3.12 · ReCiPe 2016, Hierarchist perspective.
@@ -1568,83 +1423,60 @@
             <div class="method-grid">
                 <article class="method-card">
                     <h3>System boundary</h3>
-
-                    <p>
-                        Cradle-to-gate manufacturing assessment.
-                        Intermediate transportation, use and end-of-life
-                        stages are excluded.
+                    <p class="muted">
+                        Cradle-to-gate. Intermediate transportation,
+                        product use and end-of-life are excluded.
                     </p>
                 </article>
-
                 <article class="method-card">
                     <h3>Comparison basis</h3>
-
-                    <p>
+                    <p class="muted">
                         One finished punch with the specified geometry.
-                        Batch impacts are divided by the number of parts
-                        to obtain per-component results.
+                        Batch totals are divided by N for unit results.
                     </p>
                 </article>
-
                 <article class="method-card">
                     <h3>Data sources</h3>
-
-                    <p>
-                        SolidWorks CAM simulations, WAAM measurements,
-                        CENTIMFE SLM data and simulations,
-                        literature inputs and background datasets.
+                    <p class="muted">
+                        SolidWorks CAM, WAAM measurements, CENTIMFE
+                        data and simulations, literature and background datasets.
                     </p>
                 </article>
             </div>
 
             <div class="method-grid" style="margin-top: 18px;">
                 <article class="method-card">
-                    <h3 style="color: var(--cnc);">
-                        CNC route
-                    </h3>
-
-                    <p>ER70S6 steel stock.</p>
-
+                    <h3 style="color: var(--cnc);">CNC route</h3>
+                    <p class="muted">ER70S6 steel stock.</p>
                     <p class="route">
-                        Steel production → hot rolling → CNC milling
+                        Steel production → Hot rolling → CNC milling
                     </p>
                 </article>
-
                 <article class="method-card">
-                    <h3 style="color: var(--waam);">
-                        WAAM route
-                    </h3>
-
-                    <p>ER70S6 wire with subtractive finishing.</p>
-
+                    <h3 style="color: var(--waam);">WAAM route</h3>
+                    <p class="muted">ER70S6 wire.</p>
                     <p class="route">
-                        Steel production → hot rolling → wire drawing
+                        Steel production → Hot rolling → Wire drawing
                         → WAAM → CNC finishing
                     </p>
                 </article>
-
                 <article class="method-card">
-                    <h3 style="color: var(--slm);">
-                        SLM route
-                    </h3>
-
-                    <p>1.2709 steel powder with subtractive finishing.</p>
-
+                    <h3 style="color: var(--slm);">SLM route</h3>
+                    <p class="muted">1.2709 steel powder.</p>
                     <p class="route">
-                        Steel production → gas atomization → SLM
-                        → CNC finishing
+                        Steel production → Atomization → SLM → CNC finishing
                     </p>
                 </article>
             </div>
 
             <p class="source-line">
-                Source: thesis Chapters 3–4.
-                The dashboard is a presentation of reported results;
-                it does not rerun SimaPro or calculate a new LCA.
+                The dashboard presents reported results; it does not rerun
+                SimaPro. Operational electricity KPIs exclude upstream
+                feedstock production. CNC time is machining time; WAAM time
+                includes deposition, cooling and finishing; SLM time is
+                printing time only.
             </p>
         </section>
-
-        <!-- REFERENCE RESULTS -->
 
         <section
             id="reference-results"
@@ -1652,14 +1484,8 @@
             aria-labelledby="reference-title"
         >
             <div class="section-heading">
-                <h2 id="reference-title">
-                    Reported endpoint reference values
-                </h2>
-
-                <p>
-                    Original scenario totals used by the dashboard.
-                    Available even without JavaScript.
-                </p>
+                <h2 id="reference-title">Reported endpoint reference values</h2>
+                <p>Original totals, available without JavaScript.</p>
             </div>
 
             <div
@@ -1669,12 +1495,7 @@
                 tabindex="0"
             >
                 <table>
-                    <caption>
-                        Endpoint single score, in Pt.
-                        Per-component values are calculated from each
-                        reported batch total.
-                    </caption>
-
+                    <caption>Endpoint single score — Pt.</caption>
                     <thead>
                         <tr>
                             <th scope="col">Scenario</th>
@@ -1684,7 +1505,6 @@
                             <th scope="col">SLM · per part</th>
                         </tr>
                     </thead>
-
                     <tbody>
                         <tr>
                             <th scope="row">N = 1</th>
@@ -1693,7 +1513,6 @@
                             <td class="numeric">1.146</td>
                             <td class="numeric">1.146</td>
                         </tr>
-
                         <tr>
                             <th scope="row">N = 6</th>
                             <td class="numeric">2.623</td>
@@ -1701,7 +1520,6 @@
                             <td class="numeric">6.072</td>
                             <td class="numeric">1.012</td>
                         </tr>
-
                         <tr>
                             <th scope="row">N = 30</th>
                             <td class="numeric">13.110</td>
@@ -1715,8 +1533,6 @@
 
             <p class="source-line">
                 Source: thesis §4.1.1.1 and §4.1.2.1.
-                Selected midpoint inputs are taken from Tables 4.1–4.3.
-                Operational inputs are taken from Tables 3.2–3.11.
             </p>
         </section>
     </main>
@@ -1726,17 +1542,15 @@
             <p>
                 Based on
                 <cite>
-                    Environmental Impact of Batch Scalability in
-                    Manufacturing: A Comparative Life Cycle Assessment
-                    of SLM, WAAM, and CNC Milling
+                    Environmental Impact of Batch Scalability in Manufacturing:
+                    A Comparative Life Cycle Assessment of SLM, WAAM,
+                    and CNC Milling
                 </cite>,
                 Luca Andrea Pallotta, NOVA University Lisbon, October 2026.
             </p>
-
             <p>
                 Research-results visualization.
-                Not a process simulator or a validated technology-selection
-                tool. No external libraries, fonts or tracking services.
+                No external libraries, fonts or tracking services.
             </p>
         </div>
     </footer>
@@ -1745,57 +1559,58 @@
         "use strict";
 
         /* ==========================================================
-           SOURCE DATA
+           DATA CONVENTION
 
-           Environmental values are reported batch totals.
-           No interpolation is performed.
+           Every environmental array uses this order:
 
-           Operational electricity excludes feedstock production.
+                       [CNC, WAAM, SLM]
 
-           Time boundaries:
-           CNC: machining.
-           WAAM: deposition + cooling + CNC finishing.
-           SLM: printing only.
+           Values are reported TOTALS for N = 1, N = 6 and N = 30.
+           They are transcribed from Tables 4.1, 4.2 and 4.3.
+           No interpolation or replacement by linear extrapolation occurs.
            ========================================================== */
 
         const TECHNOLOGIES = [
             {
                 id: "cnc",
+                index: 0,
                 name: "CNC milling",
-                material:
-                    "Subtractive manufacturing · ER70S6 steel stock",
+                material: "Subtractive manufacturing · ER70S6 stock",
                 color: "var(--cnc)",
                 materialLabel: "Steel stock input",
                 timeLabel: "Machining time",
                 note:
-                    "Source: Tables 3.2, 3.3 and 3.9. " +
-                    "Sequential production in the modeled setup."
+                    "Tables 3.2, 3.3 and 3.9. Sequential production."
             },
             {
                 id: "waam",
+                index: 1,
                 name: "WAAM + CNC",
-                material:
-                    "Wire arc deposition + finishing · ER70S6 wire",
+                material: "Wire arc deposition + finishing · ER70S6",
                 color: "var(--waam)",
                 materialLabel: "Wire input",
                 timeLabel: "Deposition, cooling + finishing",
                 note:
-                    "Source: Tables 3.5, 3.6 and 3.10. " +
-                    "Reported deposition electricity plus CNC finishing."
+                    "Tables 3.5, 3.6 and 3.10. Reported deposition " +
+                    "electricity plus CNC finishing."
             },
             {
                 id: "slm",
+                index: 2,
                 name: "SLM + CNC",
-                material:
-                    "Powder bed fusion + finishing · 1.2709 steel",
+                material: "Powder bed fusion + finishing · 1.2709 steel",
                 color: "var(--slm)",
                 materialLabel: "Reported powder input",
                 timeLabel: "Printing time only",
                 note:
-                    "Source: Tables 3.7, 3.8 and 3.11. " +
-                    "Reported powder input from the thesis inventory."
+                    "Tables 3.7, 3.8 and 3.11. Reported powder input."
             }
         ];
+
+        /*
+           Metadata, formatting and reported values are kept together
+           to prevent mismatches between indicators and their data.
+        */
 
         const METRICS = {
             endpoint: {
@@ -1804,44 +1619,264 @@
                 decimals: 3,
                 source: "Thesis §4.1.1.1 and §4.1.2.1",
                 description:
-                    "An aggregated ReCiPe endpoint score. " +
-                    "It is not a carbon footprint or an electricity total."
+                    "An aggregated ReCiPe endpoint score, not a carbon " +
+                    "footprint or an electricity total.",
+                values: {
+                    1:  [0.437, 0.458, 1.146],
+                    6:  [2.623, 2.745, 6.072],
+                    30: [13.11, 13.68, 53.50]
+                }
             },
+
             gw: {
                 name: "Global warming",
                 unit: "kg CO₂ eq",
                 decimals: 2,
-                source: "Thesis Tables 4.1–4.3",
                 description:
-                    "Climate-change impact expressed as carbon dioxide " +
-                    "equivalents. It does not describe every environmental category."
+                    "Climate-change impact expressed as carbon dioxide equivalents.",
+                values: {
+                    1:  [13.00, 13.99, 34.44],
+                    6:  [77.99, 83.96, 182.03],
+                    30: [389.96, 419.78, 1590.08]
+                }
             },
+
+            sod: {
+                name: "Stratospheric ozone depletion",
+                unit: "kg CFC-11 eq",
+                scientific: true,
+                description:
+                    "Potential impact on stratospheric ozone depletion, " +
+                    "expressed as CFC-11 equivalents.",
+                values: {
+                    1:  [2.39e-6, 4.20e-6, 1.36e-5],
+                    6:  [1.43e-5, 2.52e-5, 7.06e-5],
+                    30: [7.17e-5, 1.26e-4, 6.04e-4]
+                }
+            },
+
+            ir: {
+                name: "Ionizing radiation",
+                unit: "kBq Co-60 eq",
+                decimals: 3,
+                description:
+                    "An ionizing-radiation impact indicator expressed " +
+                    "as cobalt-60 equivalents.",
+                values: {
+                    1:  [0.054, 0.249, 0.786],
+                    6:  [0.325, 1.497, 4.230],
+                    30: [1.63, 7.48, 38.70]
+                }
+            },
+
+            ofhh: {
+                name: "Ozone formation, Human health",
+                unit: "kg NOₓ eq",
+                decimals: 3,
+                description:
+                    "Potential human-health impacts associated with " +
+                    "ground-level ozone formation.",
+                values: {
+                    1:  [0.028, 0.025, 0.064],
+                    6:  [0.167, 0.152, 0.336],
+                    30: [0.83, 0.76, 2.89]
+                }
+            },
+
+            pm: {
+                name: "Fine particulate matter formation",
+                unit: "kg PM₂.₅ eq",
+                decimals: 3,
+                description:
+                    "Fine particulate matter formation expressed " +
+                    "as PM₂.₅ equivalents.",
+                values: {
+                    1:  [0.018, 0.018, 0.042],
+                    6:  [0.110, 0.108, 0.226],
+                    30: [0.55, 0.54, 2.03]
+                }
+            },
+
+            ofte: {
+                name: "Ozone formation, Terrestrial ecosystems",
+                unit: "kg NOₓ eq",
+                decimals: 3,
+                description:
+                    "Potential terrestrial ecosystem impacts associated " +
+                    "with ground-level ozone formation.",
+                values: {
+                    1:  [0.029, 0.026, 0.067],
+                    6:  [0.173, 0.157, 0.349],
+                    30: [0.86, 0.79, 2.99]
+                }
+            },
+
+            ta: {
+                name: "Terrestrial acidification",
+                unit: "kg SO₂ eq",
+                decimals: 3,
+                description:
+                    "Potential terrestrial acidification expressed " +
+                    "as sulfur dioxide equivalents.",
+                values: {
+                    1:  [0.032, 0.038, 0.102],
+                    6:  [0.190, 0.227, 0.540],
+                    30: [0.95, 1.14, 4.74]
+                }
+            },
+
+            fe: {
+                name: "Freshwater eutrophication",
+                unit: "kg P eq",
+                scientific: true,
+                description:
+                    "Potential freshwater nutrient-enrichment impacts " +
+                    "expressed as phosphorus equivalents.",
+                values: {
+                    1:  [0.001, 0.001, 0.002],
+                    6:  [0.004, 0.006, 0.012],
+                    30: [0.02, 0.03, 0.12]
+                }
+            },
+
+            me: {
+                name: "Marine eutrophication",
+                unit: "kg N eq",
+                scientific: true,
+                description:
+                    "Potential marine nutrient-enrichment impacts " +
+                    "expressed as nitrogen equivalents.",
+                values: {
+                    1:  [9.10e-5, 1.50e-4, 2.82e-4],
+                    6:  [5.46e-4, 9.03e-4, 1.47e-3],
+                    30: [2.73e-3, 4.51e-3, 1.24e-2]
+                }
+            },
+
+            te: {
+                name: "Terrestrial ecotoxicity",
+                unit: "kg 1,4-DCB eq",
+                decimals: 2,
+                description:
+                    "Potential toxic effects on terrestrial ecosystems, " +
+                    "expressed as 1,4-dichlorobenzene equivalents.",
+                values: {
+                    1:  [73.35, 45.02, 100.12],
+                    6:  [440.10, 270.12, 510.24],
+                    30: [2200.49, 1350.59, 4078.18]
+                }
+            },
+
+            fwe: {
+                name: "Freshwater ecotoxicity",
+                unit: "kg 1,4-DCB eq",
+                decimals: 3,
+                description:
+                    "Potential toxic effects on freshwater ecosystems, " +
+                    "expressed as 1,4-dichlorobenzene equivalents.",
+                values: {
+                    1:  [0.015, 0.011, 0.017],
+                    6:  [0.089, 0.066, 0.091],
+                    30: [0.44, 0.33, 0.79]
+                }
+            },
+
+            mae: {
+                name: "Marine ecotoxicity",
+                unit: "kg 1,4-DCB eq",
+                decimals: 3,
+                description:
+                    "Potential toxic effects on marine ecosystems, " +
+                    "expressed as 1,4-dichlorobenzene equivalents.",
+                values: {
+                    1:  [0.058, 0.038, 0.082],
+                    6:  [0.346, 0.228, 0.424],
+                    30: [1.73, 1.14, 3.45]
+                }
+            },
+
+            hct: {
+                name: "Human carcinogenic toxicity",
+                unit: "kg 1,4-DCB eq",
+                decimals: 3,
+                description:
+                    "Potential carcinogenic toxicity impacts on human " +
+                    "health, expressed as 1,4-dichlorobenzene equivalents.",
+                values: {
+                    1:  [0.083, 0.073, 0.147],
+                    6:  [0.495, 0.441, 0.760],
+                    30: [2.48, 2.20, 6.34]
+                }
+            },
+
+            hnct: {
+                name: "Human non-carcinogenic toxicity",
+                unit: "kg 1,4-DCB eq",
+                decimals: 3,
+                description:
+                    "Potential non-carcinogenic toxicity impacts on human " +
+                    "health, expressed as 1,4-dichlorobenzene equivalents.",
+                values: {
+                    1:  [3.447, 2.754, 10.592],
+                    6:  [20.679, 16.526, 51.810],
+                    30: [103.40, 82.63, 380.36]
+                }
+            },
+
+            lu: {
+                name: "Land use",
+                unit: "m²a crop eq",
+                decimals: 3,
+                description:
+                    "Land-use impacts expressed as square-metre-years " +
+                    "of crop equivalents.",
+                values: {
+                    1:  [0.495, 0.499, 2.654],
+                    6:  [2.969, 2.994, 12.726],
+                    30: [14.85, 14.97, 89.15]
+                }
+            },
+
             mrs: {
                 name: "Mineral resource scarcity",
                 unit: "kg Cu eq",
                 decimals: 3,
-                source: "Thesis Tables 4.1–4.3",
                 description:
-                    "A mineral resource scarcity indicator. " +
-                    "Copper equivalents are not the mass of copper consumed."
+                    "Mineral resource scarcity expressed as copper " +
+                    "equivalents, not the mass of copper consumed.",
+                values: {
+                    1:  [0.683, 0.355, 0.414],
+                    6:  [4.100, 2.131, 2.329],
+                    30: [20.50, 10.65, 22.07]
+                }
             },
+
             frs: {
                 name: "Fossil resource scarcity",
                 unit: "kg oil eq",
                 decimals: 3,
-                source: "Thesis Tables 4.1–4.3",
                 description:
-                    "A fossil resource scarcity indicator expressed as oil " +
-                    "equivalents, not direct fuel use alone."
+                    "Fossil resource scarcity expressed as oil equivalents, " +
+                    "not direct fuel use alone.",
+                values: {
+                    1:  [3.135, 3.504, 9.778],
+                    6:  [18.808, 21.025, 51.171],
+                    30: [94.04, 105.12, 438.90]
+                }
             },
+
             wc: {
                 name: "Water consumption",
                 unit: "m³",
                 decimals: 3,
-                source: "Thesis Tables 4.1–4.3",
                 description:
-                    "The characterized water-consumption result. " +
-                    "It is not simply the tap-water input listed in the inventory."
+                    "Characterized water consumption, not simply the " +
+                    "tap-water input listed in the inventory.",
+                values: {
+                    1:  [0.236, 0.472, 2.117],
+                    6:  [1.413, 2.829, 11.368],
+                    30: [7.07, 14.15, 101.61]
+                }
             }
         };
 
@@ -1850,17 +1885,8 @@
                 n: 1,
                 title: "Single component · isolated SLM build",
                 description:
-                    "One punch is produced through each manufacturing route. " +
-                    "This is the isolated-production baseline.",
-
-                impacts: {
-                    endpoint: { cnc: 0.437, waam: 0.458, slm: 1.146 },
-                    gw: { cnc: 13.00, waam: 13.99, slm: 34.44 },
-                    mrs: { cnc: 0.683, waam: 0.355, slm: 0.414 },
-                    frs: { cnc: 3.135, waam: 3.504, slm: 9.778 },
-                    wc: { cnc: 0.236, waam: 0.472, slm: 2.117 }
-                },
-
+                    "One punch is produced through each manufacturing " +
+                    "route. This is the isolated-production baseline.",
                 operations: {
                     cnc: {
                         materialKg: 4.651,
@@ -1870,8 +1896,7 @@
                     waam: {
                         materialKg: 2.18,
                         electricityKwh: 3.666 + 1.135,
-                        timeHours:
-                            400 / 60 + 30 / 60 + 19 / 3600
+                        timeHours: 400 / 60 + 30 / 60 + 19 / 3600
                     },
                     slm: {
                         materialKg: 1.82,
@@ -1889,15 +1914,6 @@
                     "Six parts share one SLM build platform without vertical " +
                     "stacking. CNC and WAAM are modeled as six sequential " +
                     "production cycles.",
-
-                impacts: {
-                    endpoint: { cnc: 2.623, waam: 2.745, slm: 6.072 },
-                    gw: { cnc: 77.99, waam: 83.96, slm: 182.03 },
-                    mrs: { cnc: 4.100, waam: 2.131, slm: 2.329 },
-                    frs: { cnc: 18.808, waam: 21.025, slm: 51.171 },
-                    wc: { cnc: 1.413, waam: 2.829, slm: 11.368 }
-                },
-
                 operations: {
                     cnc: {
                         materialKg: 27.906,
@@ -1924,17 +1940,8 @@
                 title: "Thirty-component batch · SLM stacked layout",
                 description:
                     "The SLM scenario uses vertical stacking and approximately " +
-                    "28.7 kg of sacrificial supports. It is based on the reported " +
-                    "volumetric simulation. CNC and WAAM remain sequential.",
-
-                impacts: {
-                    endpoint: { cnc: 13.11, waam: 13.68, slm: 53.50 },
-                    gw: { cnc: 389.96, waam: 419.78, slm: 1590.08 },
-                    mrs: { cnc: 20.50, waam: 10.65, slm: 22.07 },
-                    frs: { cnc: 94.04, waam: 105.12, slm: 438.90 },
-                    wc: { cnc: 7.07, waam: 14.15, slm: 101.61 }
-                },
-
+                    "28.7 kg of supports. It is based on the reported volumetric " +
+                    "simulation. CNC and WAAM remain sequential.",
                 operations: {
                     cnc: {
                         materialKg: 139.53,
@@ -1957,9 +1964,7 @@
             }
         };
 
-        /* ==========================================================
-           FORMATTING
-           ========================================================== */
+        /* FORMATTING */
 
         function number(value, decimals = 2) {
             return new Intl.NumberFormat("en-GB", {
@@ -1977,29 +1982,36 @@
             }).format(value);
         }
 
+        function formatMetric(value, metric) {
+            if (metric.scientific) {
+                return value.toExponential(2).replace("e", "E");
+            }
+
+            return number(value, metric.decimals);
+        }
+
         function impactText(value, metric) {
-            return `${number(value, metric.decimals)} ${metric.unit}`;
+            return `${formatMetric(value, metric)} ${metric.unit}`;
         }
 
         function percentChange(value, reference) {
             return ((value - reference) / reference) * 100;
         }
 
-        function changeDescription(change) {
-            const magnitude = number(Math.abs(change), 1);
-
+        function describeChange(change) {
             if (Math.abs(change) < 0.05) {
                 return "approximately unchanged";
             }
 
-            return change < 0
-                ? `${magnitude}% lower`
-                : `${magnitude}% higher`;
+            return `${number(Math.abs(change), 1)}% ${
+                change < 0 ? "lower" : "higher"
+            }`;
         }
 
         function getSelection() {
-            const form = document.getElementById("dashboard-controls");
-            const fields = new FormData(form);
+            const fields = new FormData(
+                document.getElementById("dashboard-controls")
+            );
 
             return {
                 scenarioId: Number(fields.get("scenario")),
@@ -2008,294 +2020,288 @@
             };
         }
 
-        /* ==========================================================
-           TECHNOLOGY CARDS
-           ========================================================== */
+        /* CARDS */
 
         function renderCards(scenario, metricKey, allocation) {
             const metric = METRICS[metricKey];
             const divisor = allocation === "unit" ? scenario.n : 1;
-            const results = scenario.impacts[metricKey];
+            const totals = metric.values[scenario.n];
+            const values = totals.map(value => value / divisor);
+            const minimum = Math.min(...values);
 
-            const displayed = TECHNOLOGIES.map(
-                tech => results[tech.id] / divisor
-            );
+            const minimumCount = values.filter(
+                value => Math.abs(value - minimum) < 1e-12
+            ).length;
 
-            const minimum = Math.min(...displayed);
-
-            const reportingLabel = allocation === "unit"
+            const label = allocation === "unit"
                 ? "Impact per finished component"
                 : `Total impact · ${scenario.n}-component batch`;
 
-            const timePrefix = allocation === "unit"
-                ? "Allocated"
-                : "Batch";
+            document.getElementById("technology-cards").innerHTML =
+                TECHNOLOGIES.map(tech => {
+                    const value = values[tech.index];
+                    const operation = scenario.operations[tech.id];
 
-            const html = TECHNOLOGIES.map(tech => {
-                const value = results[tech.id] / divisor;
-                const operation = scenario.operations[tech.id];
+                    const isLowest =
+                        Math.abs(value - minimum) < 1e-12;
 
-                const isLowest =
-                    Math.abs(value - minimum) < 1e-10;
+                    const badge = isLowest
+                        ? (
+                            minimumCount > 1
+                                ? "Joint lowest reported value"
+                                : "Lowest modeled value"
+                        )
+                        : "Reported scenario result";
 
-                const alternative = allocation === "unit"
-                    ? `Batch total: ${impactText(results[tech.id], metric)}`
-                    : `Per component: ${
-                        impactText(results[tech.id] / scenario.n, metric)
-                    }`;
+                    const alternative = allocation === "unit"
+                        ? `Batch total: ${
+                            impactText(totals[tech.index], metric)
+                        }`
+                        : `Per component: ${
+                            impactText(
+                                totals[tech.index] / scenario.n,
+                                metric
+                            )
+                        }`;
 
-                const extraKpi = tech.id === "slm"
-                    ? `
-                        <div>
-                            <dt>Reported aggregate cost</dt>
-                            <dd>${money(operation.costEuro / divisor)}</dd>
-                        </div>
-                    `
-                    : "";
-
-                const slmWarning =
-                    tech.id === "slm" && scenario.n === 30
+                    const cost = tech.id === "slm"
                         ? `
-                            <br>
-                            113 kg reported powder input:
-                            reconciliation pending.
+                            <div>
+                                <dt>Reported aggregate cost</dt>
+                                <dd>${
+                                    money(operation.costEuro / divisor)
+                                }</dd>
+                            </div>
                         `
                         : "";
 
-                return `
-                    <article
-                        class="tech-card ${tech.id} ${
-                            isLowest ? "is-lowest" : ""
-                        }"
-                        aria-labelledby="title-${tech.id}"
-                    >
-                        <h3 class="tech-name" id="title-${tech.id}">
-                            ${tech.name}
-                        </h3>
+                    const warning =
+                        tech.id === "slm" && scenario.n === 30
+                            ? "<br>113 kg reported powder input: " +
+                              "reconciliation pending."
+                            : "";
 
-                        <p class="tech-material">
-                            ${tech.material}
-                        </p>
+                    return `
+                        <article
+                            class="tech-card ${tech.id} ${
+                                isLowest ? "is-lowest" : ""
+                            }"
+                            aria-labelledby="title-${tech.id}"
+                        >
+                            <h3 class="tech-name" id="title-${tech.id}">
+                                ${tech.name}
+                            </h3>
 
-                        <span class="status ${isLowest ? "lowest" : ""}">
-                            ${
-                                isLowest
-                                    ? "Lowest modeled value"
-                                    : "Reported scenario result"
-                            }
-                        </span>
+                            <p class="tech-material">${tech.material}</p>
 
-                        <div class="impact">
-                            <p class="impact-label">
-                                ${reportingLabel}
-                            </p>
+                            <span class="status ${
+                                isLowest ? "lowest" : ""
+                            }">${badge}</span>
 
-                            <span class="impact-number">
-                                ${number(value, metric.decimals)}
-                            </span>
-
-                            <span class="impact-unit">
-                                ${metric.unit}
-                            </span>
-
-                            <p class="impact-alternative">
-                                ${alternative}
-                            </p>
-                        </div>
-
-                        <dl class="kpis">
-                            <div>
-                                <dt>${tech.materialLabel}</dt>
-                                <dd>
-                                    ${
-                                        number(operation.materialKg / divisor)
-                                    } kg
-                                </dd>
+                            <div class="impact">
+                                <p class="impact-label">${label}</p>
+                                <span class="impact-number">
+                                    ${formatMetric(value, metric)}
+                                </span>
+                                <span class="impact-unit">${metric.unit}</span>
+                                <p class="impact-alternative">
+                                    ${alternative}
+                                </p>
                             </div>
 
-                            <div>
-                                <dt>Operational electricity</dt>
-                                <dd>
-                                    ${
+                            <dl class="kpis">
+                                <div>
+                                    <dt>${tech.materialLabel}</dt>
+                                    <dd>${
+                                        number(operation.materialKg / divisor)
+                                    } kg</dd>
+                                </div>
+                                <div>
+                                    <dt>Operational electricity</dt>
+                                    <dd>${
                                         number(
                                             operation.electricityKwh / divisor
                                         )
-                                    } kWh
-                                </dd>
-                            </div>
-
-                            <div>
-                                <dt>
-                                    ${timePrefix}: ${tech.timeLabel}
-                                </dt>
-                                <dd>
-                                    ${
+                                    } kWh</dd>
+                                </div>
+                                <div>
+                                    <dt>${
+                                        allocation === "unit"
+                                            ? "Allocated"
+                                            : "Batch"
+                                    }: ${tech.timeLabel}</dt>
+                                    <dd>${
                                         number(operation.timeHours / divisor)
-                                    } h
-                                </dd>
-                            </div>
+                                    } h</dd>
+                                </div>
+                                ${cost}
+                            </dl>
 
-                            ${extraKpi}
-                        </dl>
-
-                        <p class="card-note">
-                            ${tech.note}
-                            ${slmWarning}
-                        </p>
-                    </article>
-                `;
-            }).join("");
-
-            document.getElementById("technology-cards").innerHTML = html;
+                            <p class="card-note">
+                                ${tech.note}${warning}
+                            </p>
+                        </article>
+                    `;
+                }).join("");
         }
 
-        /* ==========================================================
-           BAR CHART
-           ========================================================== */
+        /* CHART */
 
         function renderChart(scenario, metricKey, allocation) {
             const metric = METRICS[metricKey];
             const divisor = allocation === "unit" ? scenario.n : 1;
-            const results = scenario.impacts[metricKey];
-
-            const maximum = Math.max(
-                ...TECHNOLOGIES.map(
-                    tech => results[tech.id] / divisor
-                )
+            const values = metric.values[scenario.n].map(
+                value => value / divisor
             );
 
-            const html = TECHNOLOGIES.map(tech => {
-                const value = results[tech.id] / divisor;
+            const maximum = Math.max(...values);
 
-                const width = maximum > 0
-                    ? Math.min(
-                        100,
-                        Math.max(0, value / maximum * 100)
-                    )
-                    : 0;
+            document.getElementById("comparison-bars").innerHTML =
+                TECHNOLOGIES.map(tech => {
+                    const value = values[tech.index];
+                    const width = maximum > 0
+                        ? value / maximum * 100
+                        : 0;
 
-                return `
-                    <div class="bar-row">
-                        <div class="bar-meta">
-                            <span>${tech.name}</span>
-                            <strong>
-                                ${impactText(value, metric)}
-                            </strong>
+                    return `
+                        <div class="bar-row">
+                            <div class="bar-meta">
+                                <span>${tech.name}</span>
+                                <strong>${impactText(value, metric)}</strong>
+                            </div>
+                            <div class="bar-track" aria-hidden="true">
+                                <div
+                                    class="bar-fill"
+                                    style="
+                                        width: ${width.toFixed(4)}%;
+                                        background: ${tech.color};
+                                    "
+                                ></div>
+                            </div>
                         </div>
-
-                        <div class="bar-track" aria-hidden="true">
-                            <div
-                                class="bar-fill"
-                                style="
-                                    width: ${width.toFixed(3)}%;
-                                    background: ${tech.color};
-                                "
-                            ></div>
-                        </div>
-                    </div>
-                `;
-            }).join("");
-
-            document.getElementById("comparison-bars").innerHTML = html;
+                    `;
+                }).join("");
 
             document.getElementById("chart-description").textContent =
                 `${metric.name} · ${
-                    allocation === "unit"
-                        ? "per component"
-                        : "total batch"
+                    allocation === "unit" ? "per component" : "total batch"
                 } · N = ${scenario.n}`;
         }
 
-        /* ==========================================================
-           CONTEXTUAL INTERPRETATION
-           ========================================================== */
+        /* INTERPRETATION */
 
         function renderInterpretation(scenario, metricKey) {
             const metric = METRICS[metricKey];
-
-            const selectedSlmUnit =
-                scenario.impacts[metricKey].slm / scenario.n;
-
-            const isolatedSlmUnit =
-                SCENARIOS[1].impacts[metricKey].slm;
-
-            const planarSlmUnit =
-                SCENARIOS[6].impacts[metricKey].slm / 6;
+            const selectedUnit = metric.values[scenario.n][2] / scenario.n;
+            const isolatedUnit = metric.values[1][2];
+            const planarUnit = metric.values[6][2] / 6;
 
             let scenarioMessage;
 
             if (scenario.n === 1) {
                 scenarioMessage = `
                     <strong>Isolated-production baseline.</strong>
-                    The SLM result is
-                    ${impactText(selectedSlmUnit, metric)} per component.
-                    No batch-sharing benefit is represented in this scenario.
+                    The reported SLM impact is
+                    ${impactText(selectedUnit, metric)} per component.
                 `;
             } else if (scenario.n === 6) {
-                const change = percentChange(
-                    selectedSlmUnit,
-                    isolatedSlmUnit
-                );
+                const change = percentChange(selectedUnit, isolatedUnit);
 
                 scenarioMessage = `
                     <strong>Planar build utilization.</strong>
-                    For ${metric.name.toLowerCase()}, the SLM result per
-                    component is ${changeDescription(change)} than the
-                    isolated SLM baseline. This percentage is calculated
-                    for the selected indicator.
+                    The SLM impact per component is
+                    ${describeChange(change)} than the isolated SLM
+                    baseline for the selected indicator.
                 `;
             } else {
-                const versusPlanar = percentChange(
-                    selectedSlmUnit,
-                    planarSlmUnit
-                );
+                const change = percentChange(selectedUnit, planarUnit);
 
                 scenarioMessage = `
                     <strong>Vertical stacking in this layout.</strong>
-                    For ${metric.name.toLowerCase()}, the SLM result per
-                    component is ${changeDescription(versusPlanar)}
-                    than the six-component planar scenario.
-                    Supports and the extended build alter the inventory.
+                    The SLM impact per component is
+                    ${describeChange(change)} than the six-component
+                    planar scenario for the selected indicator.
                 `;
             }
 
-            const uncertaintyMessage = metricKey === "endpoint"
+            const caution = metricKey === "endpoint"
                 ? `
-                    <strong>CNC and WAAM require a cautious ranking.</strong>
+                    <strong>Cautious ranking.</strong>
                     The reported single-component Monte Carlo analysis
                     does not support treating the small deterministic
-                    CNC advantage as a robust overall recommendation.
+                    CNC advantage over WAAM as a robust overall
+                    recommendation.
                 `
                 : `
-                    <strong>Indicator-specific comparison.</strong>
-                    A lower value here does not establish a lower impact
-                    in every other category. The endpoint Monte Carlo
-                    result should not be treated as an uncertainty
-                    analysis of this individual midpoint indicator.
+                    <strong>Indicator-specific result.</strong>
+                    A lower value does not imply lower impacts in every
+                    category. The endpoint Monte Carlo analysis is not an
+                    uncertainty analysis of this individual midpoint.
                 `;
+
+            const source = metric.source || "Thesis Tables 4.1–4.3";
 
             document.getElementById("interpretation").innerHTML = `
                 <div class="insight">
                     <p>${scenarioMessage}</p>
                 </div>
-
                 <div class="insight">
                     <p>${metric.description}</p>
                 </div>
-
                 <div class="insight">
-                    <p>${uncertaintyMessage}</p>
+                    <p>${caution}</p>
                 </div>
-
                 <p class="source-line">
-                    ${metric.source}.
+                    ${source}. Percentages use the rounded reported
+                    values, not unrounded SimaPro exports.
                 </p>
             `;
         }
 
-        /* ==========================================================
-           SLM ENDPOINT HOTSPOTS
-           ========================================================== */
+        /* ALL MIDPOINT CATEGORIES TABLE */
+
+        function renderMidpointTable(scenario, allocation) {
+            const divisor = allocation === "unit" ? scenario.n : 1;
+            const basis = allocation === "unit"
+                ? "per component"
+                : "total batch";
+
+            document.getElementById(
+                "midpoint-table-description"
+            ).textContent =
+                `N = ${scenario.n} · ${basis}. ` +
+                "This table follows the scenario and reporting basis above.";
+
+            document.getElementById("midpoint-caption").textContent =
+                `All midpoint results — N = ${scenario.n}, ${basis}.`;
+
+            document.getElementById("midpoint-table-body").innerHTML =
+                Object.entries(METRICS)
+                    .filter(([key]) => key !== "endpoint")
+                    .map(([, metric]) => {
+                        const values = metric.values[scenario.n].map(
+                            value => value / divisor
+                        );
+
+                        return `
+                            <tr>
+                                <th scope="row">${metric.name}</th>
+                                <td>${metric.unit}</td>
+                                <td class="numeric">${
+                                    formatMetric(values[0], metric)
+                                }</td>
+                                <td class="numeric">${
+                                    formatMetric(values[1], metric)
+                                }</td>
+                                <td class="numeric">${
+                                    formatMetric(values[2], metric)
+                                }</td>
+                            </tr>
+                        `;
+                    }).join("");
+        }
+
+        /* ENDPOINT HOTSPOTS */
 
         function renderSlmHotspot(scenarioId) {
             const content = {
@@ -2303,57 +2309,38 @@
                     <ul>
                         <li>
                             <strong>Approximately 43.4%:</strong>
-                            upstream atomization argon.
+                            atomization argon.
                         </li>
-
                         <li>
                             <strong>Approximately 34.6%:</strong>
-                            electricity contribution across the route.
-                        </li>
-                    </ul>
-
-                    <p class="muted">
-                        Reported contribution shares use a 1.143 Pt total
-                        in §4.1.1.3, slightly different from the 1.146 Pt
-                        headline comparison.
-                    </p>
-                `,
-
-                6: `
-                    <p>
-                        Atomized powder remains a major upstream burden.
-                        Electricity and nitrogen contributions per component
-                        decrease relative to the isolated build.
-                    </p>
-
-                    <p class="muted">
-                        No combined “atomization gas + electricity”
-                        percentage is inferred. Exact shares are omitted
-                        here pending reconciliation of the source totals.
-                    </p>
-                `,
-
-                30: `
-                    <ul>
-                        <li>
-                            <strong>57.5%:</strong>
-                            upstream atomization argon.
-                        </li>
-
-                        <li>
-                            <strong>18.4%:</strong>
-                            steel ingot supply.
-                        </li>
-
-                        <li>
-                            <strong>19.3%:</strong>
                             electricity across the route.
                         </li>
                     </ul>
-
                     <p class="muted">
-                        Reported shares reflect the stacked-build inventory,
-                        including the powder input requiring reconciliation.
+                        These reported shares use a 1.143 Pt total in
+                        §4.1.1.3, slightly different from the 1.146 Pt
+                        headline comparison.
+                    </p>
+                `,
+                6: `
+                    <p>
+                        Atomized powder remains a major upstream burden.
+                        Electricity and nitrogen contributions per
+                        component decrease relative to the isolated build.
+                    </p>
+                    <p class="muted">
+                        No combined atomization-gas and electricity share
+                        is inferred.
+                    </p>
+                `,
+                30: `
+                    <ul>
+                        <li><strong>57.5%:</strong> atomization argon.</li>
+                        <li><strong>18.4%:</strong> steel ingot supply.</li>
+                        <li><strong>19.3%:</strong> electricity across the route.</li>
+                    </ul>
+                    <p class="muted">
+                        Shares reflect the reported stacked-build inventory.
                     </p>
                 `
             };
@@ -2362,9 +2349,7 @@
                 content[scenarioId];
         }
 
-        /* ==========================================================
-           MAIN DASHBOARD UPDATE
-           ========================================================== */
+        /* UPDATE DASHBOARD */
 
         function updateDashboard(announce = true) {
             const selection = getSelection();
@@ -2389,23 +2374,18 @@
                 selection.allocation
             );
 
-            renderInterpretation(
-                scenario,
-                selection.metricKey
-            );
-
-            renderSlmHotspot(selection.scenarioId);
+            renderInterpretation(scenario, selection.metricKey);
+            renderMidpointTable(scenario, selection.allocation);
+            renderSlmHotspot(scenario.n);
 
             if (announce) {
-                const divisor =
-                    selection.allocation === "unit"
-                        ? scenario.n
-                        : 1;
+                const divisor = selection.allocation === "unit"
+                    ? scenario.n
+                    : 1;
 
-                const values = TECHNOLOGIES.map(tech => {
+                const resultSummary = TECHNOLOGIES.map(tech => {
                     const value =
-                        scenario.impacts[selection.metricKey][tech.id] /
-                        divisor;
+                        metric.values[scenario.n][tech.index] / divisor;
 
                     return `${tech.name}: ${impactText(value, metric)}`;
                 }).join(". ");
@@ -2416,79 +2396,22 @@
                         selection.allocation === "unit"
                             ? "per component"
                             : "total batch"
-                    }. ${values}.`;
+                    }. ${resultSummary}.`;
             }
         }
 
-        const controls =
-            document.getElementById("dashboard-controls");
+        const controls = document.getElementById("dashboard-controls");
 
-        controls.addEventListener(
-            "change",
-            () => updateDashboard(true)
-        );
-
+        controls.addEventListener("change", () => updateDashboard(true));
         controls.addEventListener(
             "submit",
             event => event.preventDefault()
         );
 
-        /* ==========================================================
-           SYSTEM BOUNDARY TOOLTIP
+        /* TOOLTIP: HOVER, KEYBOARD, TOUCH AND ESCAPE */
 
-           Mouse: hover over the card.
-           Keyboard: focus the button.
-           Touch/click: toggle a pinned explanation.
-           Escape: dismiss.
-           ========================================================== */
-
-        const boundaryCard =
-            document.getElementById("boundary-card");
-
-        const boundaryTrigger =
-            document.getElementById("boundary-trigger");
+        const boundaryCard = document.getElementById("boundary-card");
+        const boundaryTrigger = document.getElementById("boundary-trigger");
 
         function dismissBoundaryTooltip() {
-            boundaryCard.classList.remove("tooltip-pinned");
-            boundaryCard.classList.add("tooltip-dismissed");
-        }
-
-        boundaryCard.addEventListener("pointerenter", () => {
-            boundaryCard.classList.remove("tooltip-dismissed");
-        });
-
-        boundaryTrigger.addEventListener("focus", () => {
-            boundaryCard.classList.remove("tooltip-dismissed");
-        });
-
-        boundaryTrigger.addEventListener("click", () => {
-            if (boundaryCard.classList.contains("tooltip-pinned")) {
-                dismissBoundaryTooltip();
-            } else {
-                boundaryCard.classList.remove("tooltip-dismissed");
-                boundaryCard.classList.add("tooltip-pinned");
-            }
-        });
-
-        boundaryCard.addEventListener("focusout", event => {
-            if (!boundaryCard.contains(event.relatedTarget)) {
-                boundaryCard.classList.remove("tooltip-pinned");
-            }
-        });
-
-        document.addEventListener("pointerdown", event => {
-            if (!boundaryCard.contains(event.target)) {
-                dismissBoundaryTooltip();
-            }
-        });
-
-        document.addEventListener("keydown", event => {
-            if (event.key === "Escape") {
-                dismissBoundaryTooltip();
-            }
-        });
-
-        updateDashboard(false);
-    </script>
-</body>
-</html>
+            boundaryCard.classList.remove("tooltip
