@@ -9,7 +9,7 @@
         content="Interactive dashboard presenting life cycle assessment results for CNC milling, WAAM and SLM across three manufacturing scenarios."
     >
 
-    <meta name="color-scheme" content="dark light">
+    <meta name="color-scheme" content="dark">
 
     <title>Manufacturing Batch Scalability — Comparative LCA Dashboard</title>
 
@@ -20,19 +20,25 @@
 
         :root {
             color-scheme: dark;
+
             --bg: #09111f;
             --surface: #152237;
             --surface-alt: #0e192b;
             --border: #34455f;
+
             --text: #f1f5f9;
             --muted: #b0bfd2;
+
             --accent: #66d1ff;
             --accent-soft: rgba(102, 209, 255, 0.10);
+
             --cnc: #73adff;
             --waam: #58dfb4;
             --slm: #ffcb70;
+
             --warning: #ffcb70;
             --warning-soft: rgba(255, 203, 112, 0.08);
+
             --radius: 16px;
             --shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
         }
@@ -219,7 +225,7 @@
 
         .spec-grid {
             display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
+            grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 12px;
             margin: 24px 0 0;
         }
@@ -251,6 +257,133 @@
             gap: 10px 20px;
             padding: 18px 2px 0;
             font-size: 0.85rem;
+        }
+
+        /* ==========================================================
+           SYSTEM BOUNDARY TOOLTIP
+           ========================================================== */
+
+        .boundary-card {
+            position: relative;
+        }
+
+        .boundary-card:hover,
+        .boundary-card:focus-within {
+            border-color: var(--accent);
+        }
+
+        .boundary-trigger {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 0;
+            background: none;
+            border: 0;
+            color: var(--text);
+            font: inherit;
+            font-weight: 650;
+            text-align: left;
+            cursor: help;
+        }
+
+        /* The entire card acts as the pointer target. */
+        .boundary-trigger::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 10px;
+        }
+
+        .info-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            width: 18px;
+            height: 18px;
+            border: 1px solid var(--accent);
+            border-radius: 50%;
+            color: var(--accent);
+            font-size: 0.7rem;
+            font-weight: 750;
+            font-style: normal;
+        }
+
+        .boundary-tooltip {
+            position: absolute;
+            right: 0;
+            bottom: calc(100% + 12px);
+            z-index: 30;
+
+            display: block;
+            width: min(360px, calc(100vw - 64px));
+            padding: 18px;
+
+            background: var(--surface-alt);
+            color: var(--text);
+            border: 1px solid var(--accent);
+            border-radius: 12px;
+            box-shadow: 0 14px 36px rgba(0, 0, 0, 0.4);
+
+            font-size: 0.82rem;
+            font-weight: 400;
+            line-height: 1.6;
+            text-align: left;
+
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+
+            transition:
+                opacity 160ms ease,
+                visibility 160ms ease;
+        }
+
+        /* Keeps the tooltip open while moving the pointer onto it. */
+        .boundary-tooltip::before {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            height: 14px;
+        }
+
+        .boundary-tooltip strong {
+            display: block;
+            margin-bottom: 10px;
+            color: var(--accent);
+            font-size: 0.9rem;
+        }
+
+        .boundary-tooltip > span {
+            display: block;
+        }
+
+        .tooltip-stages {
+            margin-top: 12px;
+            padding: 10px;
+            background: var(--accent-soft);
+            border-radius: 7px;
+            color: var(--accent);
+            font-size: 0.77rem;
+            font-weight: 650;
+        }
+
+        .tooltip-note {
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 0.76rem;
+        }
+
+        .boundary-card:not(.tooltip-dismissed):hover .boundary-tooltip,
+        .boundary-card:not(.tooltip-dismissed):focus-within .boundary-tooltip,
+        .boundary-card.tooltip-pinned .boundary-tooltip {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
         }
 
         /* ==========================================================
@@ -766,10 +899,7 @@
         }
 
         @media (max-width: 780px) {
-            .spec-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-
+            .spec-grid,
             .tech-grid,
             .two-column,
             .hotspot-grid,
@@ -845,16 +975,20 @@
         @media print {
             :root {
                 color-scheme: light;
+
                 --bg: #ffffff;
                 --surface: #ffffff;
                 --surface-alt: #f3f5f8;
                 --border: #b7c1ce;
+
                 --text: #142033;
                 --muted: #445368;
+
                 --accent: #075d85;
                 --cnc: #175ba8;
                 --waam: #08754f;
                 --slm: #8b5500;
+
                 --shadow: none;
             }
 
@@ -869,7 +1003,9 @@
             .page-nav,
             .controls,
             .skip-link,
-            .control-help {
+            .control-help,
+            .boundary-tooltip,
+            .info-icon {
                 display: none;
             }
 
@@ -939,17 +1075,57 @@
 
                     <div>
                         <dt>Finished geometry</dt>
-                        <dd>155.06 cm³ · approximately 1.22–1.25 kg</dd>
+                        <dd>
+                            155.06 cm³ · approximately 1.22–1.25 kg
+                        </dd>
                     </div>
 
-                    <div>
+                    <div class="boundary-card" id="boundary-card">
                         <dt>System boundary</dt>
-                        <dd>Cradle-to-gate</dd>
-                    </div>
 
-                    <div>
-                        <dt>Reference for comparison</dt>
-                        <dd>One finished component</dd>
+                        <dd>
+                            <button
+                                type="button"
+                                class="boundary-trigger"
+                                id="boundary-trigger"
+                                aria-describedby="boundary-tooltip"
+                            >
+                                Cradle-to-gate
+                                <span
+                                    class="info-icon"
+                                    aria-hidden="true"
+                                >i</span>
+                            </button>
+
+                            <span
+                                class="boundary-tooltip"
+                                id="boundary-tooltip"
+                                role="tooltip"
+                            >
+                                <strong>
+                                    What does cradle-to-gate mean?
+                                </strong>
+
+                                <span>
+                                    The assessment covers the production
+                                    chain from raw material extraction
+                                    to the finished component leaving
+                                    the manufacturing facility.
+                                </span>
+
+                                <span class="tooltip-stages">
+                                    Raw materials → Feedstock production
+                                    → Manufacturing → Finishing
+                                </span>
+
+                                <span class="tooltip-note">
+                                    Product use and end-of-life are
+                                    outside this boundary. This study
+                                    also excludes intermediate
+                                    transportation.
+                                </span>
+                            </span>
+                        </dd>
                     </div>
                 </dl>
             </div>
@@ -978,7 +1154,9 @@
 
         <div class="notice section">
             <p>
-                <strong>Three assessed scenarios, not a predictive model.</strong>
+                <strong>
+                    Three assessed scenarios, not a predictive model.
+                </strong>
                 This dashboard displays the results reported for
                 <strong>1, 6 and 30 components</strong>.
                 It does not interpolate unassessed batch sizes or establish
@@ -994,7 +1172,10 @@
             aria-labelledby="dashboard-title"
         >
             <div class="section-heading">
-                <h2 id="dashboard-title">Compare the assessed scenarios</h2>
+                <h2 id="dashboard-title">
+                    Compare the assessed scenarios
+                </h2>
+
                 <p>
                     Select a production scenario, reporting basis and
                     environmental indicator.
@@ -1086,7 +1267,10 @@
                     </fieldset>
 
                     <div class="metric-control">
-                        <label class="control-label" for="metric-select">
+                        <label
+                            class="control-label"
+                            for="metric-select"
+                        >
                             3. Environmental indicator
                         </label>
 
@@ -1148,7 +1332,10 @@
                 aria-atomic="true"
             ></div>
 
-            <div class="tech-grid" id="technology-cards"></div>
+            <div
+                class="tech-grid"
+                id="technology-cards"
+            ></div>
 
             <p class="dashboard-footnote">
                 “Lowest modeled value” identifies a deterministic result
@@ -1210,7 +1397,9 @@
 
             <div class="hotspot-grid">
                 <article class="hotspot-card">
-                    <h3 style="color: var(--cnc);">CNC milling</h3>
+                    <h3 style="color: var(--cnc);">
+                        CNC milling
+                    </h3>
 
                     <span
                         class="hotspot-number"
@@ -1232,7 +1421,9 @@
                 </article>
 
                 <article class="hotspot-card">
-                    <h3 style="color: var(--waam);">WAAM + CNC</h3>
+                    <h3 style="color: var(--waam);">
+                        WAAM + CNC
+                    </h3>
 
                     <ul>
                         <li>
@@ -1254,7 +1445,10 @@
                 </article>
 
                 <article class="hotspot-card">
-                    <h3 style="color: var(--slm);">SLM + CNC</h3>
+                    <h3 style="color: var(--slm);">
+                        SLM + CNC
+                    </h3>
+
                     <div id="slm-hotspot-content"></div>
                 </article>
             </div>
@@ -1405,7 +1599,10 @@
 
             <div class="method-grid" style="margin-top: 18px;">
                 <article class="method-card">
-                    <h3 style="color: var(--cnc);">CNC route</h3>
+                    <h3 style="color: var(--cnc);">
+                        CNC route
+                    </h3>
+
                     <p>ER70S6 steel stock.</p>
 
                     <p class="route">
@@ -1414,7 +1611,10 @@
                 </article>
 
                 <article class="method-card">
-                    <h3 style="color: var(--waam);">WAAM route</h3>
+                    <h3 style="color: var(--waam);">
+                        WAAM route
+                    </h3>
+
                     <p>ER70S6 wire with subtractive finishing.</p>
 
                     <p class="route">
@@ -1424,7 +1624,10 @@
                 </article>
 
                 <article class="method-card">
-                    <h3 style="color: var(--slm);">SLM route</h3>
+                    <h3 style="color: var(--slm);">
+                        SLM route
+                    </h3>
+
                     <p>1.2709 steel powder with subtractive finishing.</p>
 
                     <p class="route">
@@ -1547,12 +1750,12 @@
            Environmental values are reported batch totals.
            No interpolation is performed.
 
-           Operational electricity excludes upstream feedstock production.
+           Operational electricity excludes feedstock production.
 
            Time boundaries:
-           - CNC: machining.
-           - WAAM: deposition + cooling + CNC finishing.
-           - SLM: printing only.
+           CNC: machining.
+           WAAM: deposition + cooling + CNC finishing.
+           SLM: printing only.
            ========================================================== */
 
         const TECHNOLOGIES = [
@@ -1604,7 +1807,6 @@
                     "An aggregated ReCiPe endpoint score. " +
                     "It is not a carbon footprint or an electricity total."
             },
-
             gw: {
                 name: "Global warming",
                 unit: "kg CO₂ eq",
@@ -1614,7 +1816,6 @@
                     "Climate-change impact expressed as carbon dioxide " +
                     "equivalents. It does not describe every environmental category."
             },
-
             mrs: {
                 name: "Mineral resource scarcity",
                 unit: "kg Cu eq",
@@ -1624,7 +1825,6 @@
                     "A mineral resource scarcity indicator. " +
                     "Copper equivalents are not the mass of copper consumed."
             },
-
             frs: {
                 name: "Fossil resource scarcity",
                 unit: "kg oil eq",
@@ -1634,7 +1834,6 @@
                     "A fossil resource scarcity indicator expressed as oil " +
                     "equivalents, not direct fuel use alone."
             },
-
             wc: {
                 name: "Water consumption",
                 unit: "m³",
@@ -1655,31 +1854,11 @@
                     "This is the isolated-production baseline.",
 
                 impacts: {
-                    endpoint: {
-                        cnc: 0.437,
-                        waam: 0.458,
-                        slm: 1.146
-                    },
-                    gw: {
-                        cnc: 13.00,
-                        waam: 13.99,
-                        slm: 34.44
-                    },
-                    mrs: {
-                        cnc: 0.683,
-                        waam: 0.355,
-                        slm: 0.414
-                    },
-                    frs: {
-                        cnc: 3.135,
-                        waam: 3.504,
-                        slm: 9.778
-                    },
-                    wc: {
-                        cnc: 0.236,
-                        waam: 0.472,
-                        slm: 2.117
-                    }
+                    endpoint: { cnc: 0.437, waam: 0.458, slm: 1.146 },
+                    gw: { cnc: 13.00, waam: 13.99, slm: 34.44 },
+                    mrs: { cnc: 0.683, waam: 0.355, slm: 0.414 },
+                    frs: { cnc: 3.135, waam: 3.504, slm: 9.778 },
+                    wc: { cnc: 0.236, waam: 0.472, slm: 2.117 }
                 },
 
                 operations: {
@@ -1712,31 +1891,11 @@
                     "production cycles.",
 
                 impacts: {
-                    endpoint: {
-                        cnc: 2.623,
-                        waam: 2.745,
-                        slm: 6.072
-                    },
-                    gw: {
-                        cnc: 77.99,
-                        waam: 83.96,
-                        slm: 182.03
-                    },
-                    mrs: {
-                        cnc: 4.100,
-                        waam: 2.131,
-                        slm: 2.329
-                    },
-                    frs: {
-                        cnc: 18.808,
-                        waam: 21.025,
-                        slm: 51.171
-                    },
-                    wc: {
-                        cnc: 1.413,
-                        waam: 2.829,
-                        slm: 11.368
-                    }
+                    endpoint: { cnc: 2.623, waam: 2.745, slm: 6.072 },
+                    gw: { cnc: 77.99, waam: 83.96, slm: 182.03 },
+                    mrs: { cnc: 4.100, waam: 2.131, slm: 2.329 },
+                    frs: { cnc: 18.808, waam: 21.025, slm: 51.171 },
+                    wc: { cnc: 1.413, waam: 2.829, slm: 11.368 }
                 },
 
                 operations: {
@@ -1769,31 +1928,11 @@
                     "volumetric simulation. CNC and WAAM remain sequential.",
 
                 impacts: {
-                    endpoint: {
-                        cnc: 13.11,
-                        waam: 13.68,
-                        slm: 53.50
-                    },
-                    gw: {
-                        cnc: 389.96,
-                        waam: 419.78,
-                        slm: 1590.08
-                    },
-                    mrs: {
-                        cnc: 20.50,
-                        waam: 10.65,
-                        slm: 22.07
-                    },
-                    frs: {
-                        cnc: 94.04,
-                        waam: 105.12,
-                        slm: 438.90
-                    },
-                    wc: {
-                        cnc: 7.07,
-                        waam: 14.15,
-                        slm: 101.61
-                    }
+                    endpoint: { cnc: 13.11, waam: 13.68, slm: 53.50 },
+                    gw: { cnc: 389.96, waam: 419.78, slm: 1590.08 },
+                    mrs: { cnc: 20.50, waam: 10.65, slm: 22.07 },
+                    frs: { cnc: 94.04, waam: 105.12, slm: 438.90 },
+                    wc: { cnc: 7.07, waam: 14.15, slm: 101.61 }
                 },
 
                 operations: {
@@ -2224,7 +2363,7 @@
         }
 
         /* ==========================================================
-           MAIN UPDATE
+           MAIN DASHBOARD UPDATE
            ========================================================== */
 
         function updateDashboard(announce = true) {
@@ -2293,6 +2432,61 @@
             "submit",
             event => event.preventDefault()
         );
+
+        /* ==========================================================
+           SYSTEM BOUNDARY TOOLTIP
+
+           Mouse: hover over the card.
+           Keyboard: focus the button.
+           Touch/click: toggle a pinned explanation.
+           Escape: dismiss.
+           ========================================================== */
+
+        const boundaryCard =
+            document.getElementById("boundary-card");
+
+        const boundaryTrigger =
+            document.getElementById("boundary-trigger");
+
+        function dismissBoundaryTooltip() {
+            boundaryCard.classList.remove("tooltip-pinned");
+            boundaryCard.classList.add("tooltip-dismissed");
+        }
+
+        boundaryCard.addEventListener("pointerenter", () => {
+            boundaryCard.classList.remove("tooltip-dismissed");
+        });
+
+        boundaryTrigger.addEventListener("focus", () => {
+            boundaryCard.classList.remove("tooltip-dismissed");
+        });
+
+        boundaryTrigger.addEventListener("click", () => {
+            if (boundaryCard.classList.contains("tooltip-pinned")) {
+                dismissBoundaryTooltip();
+            } else {
+                boundaryCard.classList.remove("tooltip-dismissed");
+                boundaryCard.classList.add("tooltip-pinned");
+            }
+        });
+
+        boundaryCard.addEventListener("focusout", event => {
+            if (!boundaryCard.contains(event.relatedTarget)) {
+                boundaryCard.classList.remove("tooltip-pinned");
+            }
+        });
+
+        document.addEventListener("pointerdown", event => {
+            if (!boundaryCard.contains(event.target)) {
+                dismissBoundaryTooltip();
+            }
+        });
+
+        document.addEventListener("keydown", event => {
+            if (event.key === "Escape") {
+                dismissBoundaryTooltip();
+            }
+        });
 
         updateDashboard(false);
     </script>
