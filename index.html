@@ -2046,7 +2046,14 @@
                     `
                     : "";
 
-                
+                const slmWarning =
+                    tech.id === "slm" && scenario.n === 30
+                        ? `
+                            <br>
+                            113 kg reported powder input:
+                            reconciliation pending.
+                        `
+                        : "";
 
                 return `
                     <article
@@ -2270,7 +2277,9 @@
                     <p>${uncertaintyMessage}</p>
                 </div>
 
-                
+                <p class="source-line">
+                    ${metric.source}.
+                </p>
             `;
         }
 
