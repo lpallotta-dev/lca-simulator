@@ -2131,10 +2131,7 @@
                             ${extraKpi}
                         </dl>
 
-                        <p class="card-note">
-                            ${tech.note}
-                            ${slmWarning}
-                        </p>
+                        ${slmWarning ? `<p class="card-note">${slmWarning}</p>` : ""}
                     </article>
                 `;
             }).join("");
